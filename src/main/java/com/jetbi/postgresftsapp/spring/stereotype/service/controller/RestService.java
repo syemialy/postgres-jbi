@@ -87,6 +87,21 @@ public class RestService {
     }
 
 
+    /**
+     * Service to create ts_vector index
+     *
+     * @param body JSON string with the instructions for index creation
+     *             <pre>
+     *             {"name":"idx_prddescr",
+     *             "table":{
+     *                     "name":"products",
+     *                     "columns":[
+     *                              {"name":"description"},
+     *                              {"name":"product_name"}
+     *                              ]}}
+     *             </pre>
+     * @return Status for current operation
+     */
     @RequestMapping(value = "index", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String createIndex(@RequestBody String body) {
         Map<String,Object> request = gson.fromJson(body, Map.class);
@@ -105,6 +120,14 @@ public class RestService {
         }
     }
 
+    /**
+     * Service to drop an index
+     * @param body - JSON string with the name of index specified
+     *             <pre>
+     *             {"name":"idx_prddescr"}
+     *             </pre>
+     * @return JSON string with the status of current operation
+     */
     @RequestMapping(value = "index", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String dropIndex(@RequestBody String body) {
         Map<String,Object> request = gson.fromJson(body, Map.class);
@@ -121,6 +144,5 @@ public class RestService {
         finally {
             return gson.toJson(responseMap);
         }
-
     }
 }
