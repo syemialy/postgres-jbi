@@ -1,1 +1,5 @@
+
+com.jetbi.postgresftsapp.spring
+com.jetbi.postgresftsapp.spring.config
+com.jetbi.postgresftsapp.spring.stereotype.service
 com.jetbi.postgresftsapp.spring.stereotype.service.controller
