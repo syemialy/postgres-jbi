@@ -70,7 +70,10 @@ public class PostgresFtsSearchService implements FtsSearchService {
 
     @Override
     public String dropTsvectorIndex(String name) throws SQLException {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("DROP INDEX ").append(name);
+        jdbcTemplate.execute(sb.toString());
+        return sb.toString();
     }
 
     @Override

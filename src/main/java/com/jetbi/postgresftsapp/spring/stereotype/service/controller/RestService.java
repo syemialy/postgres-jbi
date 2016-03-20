@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class RestService {
     }
      * </pre>
      */
-    @RequestMapping(value = "search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String search(@RequestBody String body) {
         Map<String,Object> searchRequest = gson.fromJson(body, Map.class);
         Map<String,Object> responseMap = new HashMap<String,Object>();
@@ -86,7 +87,7 @@ public class RestService {
     }
 
 
-    @RequestMapping(value = "index", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "index", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String createIndex(@RequestBody String body) {
         Map<String,Object> request = gson.fromJson(body, Map.class);
         Map<String,Object> responseMap = new HashMap<>(0);
@@ -102,5 +103,24 @@ public class RestService {
         finally {
             return gson.toJson(responseMap);
         }
+    }
+
+    @RequestMapping(value = "index", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String dropIndex(@RequestBody String body) {
+        Map<String,Object> request = gson.fromJson(body, Map.class);
+        Map<String,Object> responseMap = new HashMap<>(0);
+        try {
+            String resp = ftsSearchService.dropTsvectorIndex((String)request.get(Field.NAME));
+            responseMap.put(Field.RESULT, "dropped");
+            responseMap.put(Field.STATEMENT, resp);
+            responseMap.put(Field.ERROR,false);
+        } catch (Exception e) {
+            responseMap.put(Field.ERROR,true);
+            responseMap.put(Field.ERROR_MSG,e.getMessage());
+        }
+        finally {
+            return gson.toJson(responseMap);
+        }
+
     }
 }
