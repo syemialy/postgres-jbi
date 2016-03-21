@@ -9,3 +9,24 @@ curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table
 {"result":"created","error":false,"sqlstatement":"CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(description,\u0027\u0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027)))"}
 
 curl -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_prddescr"} http://localhost:8081/srv/index
+
+
+
+Если нужно, можете тестить на работоспособность https://postgres-jbi.herokuapp.com
+(в базе есть таблица producs в ней около 30 записей, можно тестить поиск по полям product_name и descripiton критерий cloud)
+
+1.через srv/search ищем продукты у которых в product_name и/или description есть слово cloud
+2. в результатах будет метрика - сколько миллисекунд выполнялся запрос
+3. создаем индекс по колонкам description и product_name
+4. выполняем поиск снова
+5. смотрим насколько возррасла производительность
+6. удаляем индекс
+7. выполняем поиск снова
+8. смотрим насколько упала производительность
+
+
+1,4,7 curl -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"sign"}' https://postgres-jbi.herokuapp.com/srv/search
+
+3 curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_ts1","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' https://postgres-jbi.herokuapp.com/srv/index
+
+6 curl -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_ts1"}' https://postgres-jbi.herokuapp.com/srv/index
