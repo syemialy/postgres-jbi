@@ -3,6 +3,8 @@ package com.jetbi.postgresftsapp.spring.stereotype.service.controller;
 import com.google.gson.Gson;
 import com.jetbi.postgresftsapp.spring.Field;
 import com.jetbi.postgresftsapp.spring.stereotype.service.FtsSearchService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,8 @@ import java.util.Objects;
 @Controller
 @RequestMapping("srv")
 public class RestService {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private Gson gson;
@@ -78,12 +82,11 @@ public class RestService {
             responseMap.put(Field.RESULT, searchResult);
             responseMap.put(Field.ERROR,false);
         } catch (Exception e) {
+            log.error("search error: {}",e.getMessage());
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
         }
-        finally {
-            return gson.toJson(responseMap);
-        }
+        return gson.toJson(responseMap);
     }
 
 
@@ -112,12 +115,11 @@ public class RestService {
             responseMap.put(Field.STATEMENT, resp);
             responseMap.put(Field.ERROR,false);
         } catch (Exception e) {
+            log.error("index create error: {}",e.getMessage());
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
         }
-        finally {
-            return gson.toJson(responseMap);
-        }
+        return gson.toJson(responseMap);
     }
 
     /**
@@ -138,11 +140,11 @@ public class RestService {
             responseMap.put(Field.STATEMENT, resp);
             responseMap.put(Field.ERROR,false);
         } catch (Exception e) {
+            log.error("index delete error: {}",e.getMessage());
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
         }
-        finally {
-            return gson.toJson(responseMap);
-        }
+
+        return gson.toJson(responseMap);
     }
 }
