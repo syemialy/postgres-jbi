@@ -115,6 +115,7 @@ public class RestService {
             responseMap.put(Field.STATEMENT, resp);
             responseMap.put(Field.ERROR,false);
         } catch (Exception e) {
+            log.error("failed index creation {}",e);
             log.error("index create error: {}",e.getMessage());
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
@@ -140,6 +141,7 @@ public class RestService {
             responseMap.put(Field.STATEMENT, resp);
             responseMap.put(Field.ERROR,false);
         } catch (Exception e) {
+            log.error("failed index delete {}",e);
             log.error("index delete error: {}",e.getMessage());
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
