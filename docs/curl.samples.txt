@@ -1,16 +1,11 @@
 curl -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"need to connect"}' http://localhost:8081/srv/search
 
-curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' h
-ttp://localhost:8081/srv/index
-{"error":true,"error_message":"StatementCallback; bad SQL grammar [CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(des
-cription,\u0027\u0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027))]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error at
-end of input\n  Position: 133"}
+curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' http://localhost:8081/srv/index
 
-curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","ta
-ble":{"name":"products","columns":[{"name":"description","selectable":false,"ts
-include":true},{"name":"product_name","selectable":true,"tsinclude":true}]}}' h
-ttp://localhost:8081/srv/index
-{"result":"created","error":false,"sqlstatement":"CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(description,\u0027\u
-0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027)))"}
+{"error":true,"error_message":"StatementCallback; bad SQL grammar [CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(description,\u0027\u0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027))]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error attend of input\n  Position: 133"}
+
+curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"product_name","selectable":true,"tsinclude":true}]}}' http://localhost:8081/srv/index
+
+{"result":"created","error":false,"sqlstatement":"CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(description,\u0027\u0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027)))"}
 
 curl -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_prddescr"} http://localhost:8081/srv/index
