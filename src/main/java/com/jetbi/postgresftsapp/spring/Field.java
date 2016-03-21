@@ -3,7 +3,7 @@ package com.jetbi.postgresftsapp.spring;
 /**
  * This interface describes communication protocol for the application REST services
  *
- * Created by Sergei.Emelianov on 20.03.2016.
+ * @author Sergei.Emelianov on 20.03.2016.
  */
 public interface Field {
     //COMMON

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by Sergei.Emelianov on 19.03.2016.
+ * @author Sergei.Emelianov on 19.03.2016.
  */
 @Service
 public class PostgresFtsSearchService implements FtsSearchService {

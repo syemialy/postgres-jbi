@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Service to provide FTS search, index creation and re-indexing.
  *
- * Created by Sergei.Emelianov on 19.03.2016.
+ * @author Sergei.Emelianov on 19.03.2016.
  */
 public interface FtsSearchService {
 

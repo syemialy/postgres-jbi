@@ -13,9 +13,9 @@ import javax.servlet.ServletRegistration;
 /**
  * Web application provides REST services to perform FTS searches on a PostgreSQL database.
  * The application is Spring based and this class basically replaces standard web.xml file.
- * <p/>
- * <p/>
- * Created by Sergei.Emelianov on 19.03.2016.
+ * <p>
+ * <p>
+ * @author Sergei.Emelianov on 19.03.2016.
  */
 public class PostgresFTSWebApp implements WebApplicationInitializer {
 
@@ -42,7 +42,7 @@ public class PostgresFTSWebApp implements WebApplicationInitializer {
     /**
      * App context initialization
      *
-     * @return
+     * @return context of the web application
      */
     private WebApplicationContext getContext() {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();

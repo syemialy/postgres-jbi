@@ -21,7 +21,7 @@ import java.util.Properties;
 /**
  * Configuration class to initialize MVC part of the application
  * <p/>
- * Created by Sergei.Emelianov on 19.03.2016.
+ * @author Sergei.Emelianov on 19.03.2016.
  */
 @Configuration
 @ComponentScan(basePackages = {"com.jetbi.postgresftsapp.spring.stereotype"})
