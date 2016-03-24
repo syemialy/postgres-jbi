@@ -1,16 +1,16 @@
-curl -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"need to connect"}' http://localhost:8081/srv/search
+curl --user test:test -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"need to connect"}' http://localhost:8081/srv/search
 
-curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' http://localhost:8081/srv/index
+curl --user test:test -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' http://localhost:8081/srv/index
 
 {"error":true,"error_message":"StatementCallback; bad SQL grammar [CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(description,\u0027\u0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027))]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error attend of input\n  Position: 133"}
 
-curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"product_name","selectable":true,"tsinclude":true}]}}' http://localhost:8081/srv/index
+curl --user test:test -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"product_name","selectable":true,"tsinclude":true}]}}' http://localhost:8081/srv/index
 
 {"result":"created","error":false,"sqlstatement":"CREATE INDEX idx_prddescr ON products USING GIN (to_tsvector(\u0027english\u0027,coalesce(description,\u0027\u0027) || \u0027 \u0027 || coalesce(product_name,\u0027\u0027)))"}
 
-curl -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_prddescr"} http://localhost:8081/srv/index
+curl --user test:test -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_prddescr"} http://localhost:8081/srv/index
 
-
+curl --user test:test -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"product_name","selectable":true,"tsinclude":true}]}}' http://localhost:8081/srv/async/index
 
 Если нужно, можете тестить на работоспособность https://postgres-jbi.herokuapp.com
 (в базе есть таблица producs в ней около 30 записей, можно тестить поиск по полям product_name и descripiton критерий cloud)
@@ -25,8 +25,8 @@ curl -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_prddescr"} htt
 8. смотрим насколько упала производительность
 
 
-1,4,7 curl -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"sign"}' https://postgres-jbi.herokuapp.com/srv/search
+1,4,7 curl --user test:test -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"sign"}' https://postgres-jbi.herokuapp.com/srv/search
 
-3 curl -X POST -H 'Content-type:application/json' -d'{"name":"idx_ts1","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' https://postgres-jbi.herokuapp.com/srv/index
+3 curl --user test:test -X POST -H 'Content-type:application/json' -d'{"name":"idx_ts1","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' https://postgres-jbi.herokuapp.com/srv/index
 
-6 curl -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_ts1"}' https://postgres-jbi.herokuapp.com/srv/index
+6 curl --user test:test -X DELETE -H 'Content-type:application/json' -d'{"name":"idx_ts1"}' https://postgres-jbi.herokuapp.com/srv/index
