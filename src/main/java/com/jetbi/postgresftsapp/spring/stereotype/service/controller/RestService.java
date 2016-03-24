@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -124,6 +126,30 @@ public class RestService {
     }
 
     /**
+     * Same as createIndex but the logic is run in async mode, hence user will have to check if index had been created via GET method to index endpoint
+     * @param body
+     * @return
+     */
+    @RequestMapping(value = "async/index", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String createIndexAsync(@RequestBody String body) {
+        Map<String,Object> request = gson.fromJson(body, Map.class);
+        Map<String,Object> responseMap = new HashMap<>(0);
+        try {
+            log.debug("starting index creation process in async mode");
+            ftsSearchService.createTsvectorIndexAsync(request);
+            responseMap.put(Field.RESULT, "scheduled");
+            responseMap.put(Field.MESSAGE, "check later for index create status");
+            responseMap.put(Field.ERROR,false);
+        } catch (Exception e) {
+            log.error("failed index creation {}",e);
+            log.error("index create error: {}",e.getMessage());
+            responseMap.put(Field.ERROR,true);
+            responseMap.put(Field.ERROR_MSG,e.getMessage());
+        }
+        return gson.toJson(responseMap);
+    }
+
+    /**
      * Service to drop an index
      * @param body - JSON string with the name of index specified
      *             <pre>
@@ -143,6 +169,33 @@ public class RestService {
         } catch (Exception e) {
             log.error("failed index delete {}",e);
             log.error("index delete error: {}",e.getMessage());
+            responseMap.put(Field.ERROR,true);
+            responseMap.put(Field.ERROR_MSG,e.getMessage());
+        }
+
+        return gson.toJson(responseMap);
+    }
+
+
+    /**
+     * Service to drop an index
+     * @param body - JSON string with the name of index specified
+     *             <pre>
+     *             {"name":"idx_prddescr"}
+     *             </pre>
+     * @return JSON string with the status of current operation
+     */
+    @RequestMapping(value = "index", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String checkIndex(@RequestBody String body) {
+        Map<String,Object> request = gson.fromJson(body, Map.class);
+        Map<String,Object> responseMap = new HashMap<>(0);
+        try {
+            List resp = ftsSearchService.checkTsvectorIndex((String) request.get(Field.NAME));
+            if ( resp == null || resp.isEmpty() ) throw new Exception("index doen't exist");
+            responseMap.put(Field.RESULT, resp);
+            responseMap.put(Field.ERROR,false);
+        } catch (Exception e) {
+            log.error("index check error: {}",e.getMessage());
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
         }

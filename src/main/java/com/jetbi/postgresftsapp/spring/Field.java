@@ -26,4 +26,7 @@ public interface Field {
 
     //Create index message format
     String TYPE = "type";
+
+    //Async create index response
+    String MESSAGE = "message";
 }

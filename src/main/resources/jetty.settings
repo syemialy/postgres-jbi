@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+    <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+    <Configure class="org.eclipse.jetty.server.Server">
+        <Call name="addBean">
+            <Arg>
+                <New class="org.eclipse.jetty.security.HashLoginService">
+                    <Set name="name">jbibasic</Set>
+                    <Set name="refreshInterval">0</Set>
+                    <Call name="putUser">
+                        <Arg><SystemProperty name="rest.user.name" default="test"/></Arg>
+                        <Arg>
+                            <New class="org.eclipse.jetty.util.security.Password">
+                                <Arg><SystemProperty name="rest.user.pwd" default="test"/></Arg>
+                            </New>
+                        </Arg>
+                        <Arg>
+                             <Array type="java.lang.String">
+                               <Item>value0</Item>
+                               <Item><New class="java.lang.String"><Arg>api</Arg></New></Item>
+                             </Array>
+                        </Arg>
+                    </Call>
+                </New>
+            </Arg>
+        </Call>
+    </Configure>

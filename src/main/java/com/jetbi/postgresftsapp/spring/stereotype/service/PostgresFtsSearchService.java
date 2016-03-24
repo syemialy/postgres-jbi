@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +46,15 @@ public class PostgresFtsSearchService implements FtsSearchService {
         return sb.toString();
     }
 
+    @Override
+    @Async
+    public Future<String> createTsvectorIndexAsync(Map<String, Object> request) throws SQLException {
+        log.debug("async procedure for index begins");
+        String result = createTsvectorIndex(request);
+        log.debug("result returned");
+        return new AsyncResult<String>(result);
+    }
+
     /**
      *
      * @param columns
@@ -70,10 +80,18 @@ public class PostgresFtsSearchService implements FtsSearchService {
 
     @Override
     public String dropTsvectorIndex(String name) throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DROP INDEX ").append(name);
+        StringBuilder sb = new StringBuilder("DROP INDEX ");
+        sb.append(name);
         jdbcTemplate.execute(sb.toString());
         return sb.toString();
+    }
+
+    @Override
+    public List<String> checkTsvectorIndex(String name) throws SQLException {
+        StringBuilder sb = new StringBuilder("SELECT (tablename || '.' || indexname) AS location FROM pg_indexes WHERE indexname = '");
+        sb.append(name).append("'");
+        List result = jdbcTemplate.queryForList(sb.toString());
+        return result;
     }
 
     @Override

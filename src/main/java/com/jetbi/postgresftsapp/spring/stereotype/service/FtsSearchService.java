@@ -1,7 +1,9 @@
 package com.jetbi.postgresftsapp.spring.stereotype.service;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Service to provide FTS search, index creation and re-indexing.
@@ -10,9 +12,41 @@ import java.util.Map;
  */
 public interface FtsSearchService {
 
+    /**
+     * Assembles SQL statement to create index and executes the statement
+     *
+     * @param request
+     * @return
+     * @throws SQLException
+     */
     String createTsvectorIndex(final Map<String,Object> request) throws SQLException;
 
+    /**
+     * Executes index create statement asynchronously
+     *
+     * @param request
+     * @return
+     * @throws SQLException
+     */
+    Future<String> createTsvectorIndexAsync(Map<String, Object> request) throws SQLException;
+
+    /**
+     * Drops index by name
+     *
+     * @param name
+     * @return
+     * @throws SQLException
+     */
     String dropTsvectorIndex(final String name) throws SQLException;
+
+    /**
+     * Checks if index exists
+     *
+     * @param name - name of the index to check on
+     * @return
+     * @throws SQLException
+     */
+    List<String> checkTsvectorIndex(final String name) throws SQLException;
 
     /**
      * Assembles a SQL statement for FTS search and runs it to obtain the result records
@@ -22,4 +56,5 @@ public interface FtsSearchService {
      * @throws SQLException
      */
     Map<String,Object> search(final Map<String,Object> request) throws SQLException;
+
 }

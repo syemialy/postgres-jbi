@@ -8,4 +8,18 @@
 
     <!-- all the initialization for PostgreFTS is 100% in code, look at PostresFTSWebApp.java -->
 
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Secured REST services</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>api</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>basic</auth-method>
+        <realm-name>jbibasic</realm-name>
+    </login-config>
+
 </web-app>

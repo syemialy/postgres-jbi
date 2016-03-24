@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -27,6 +28,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"com.jetbi.postgresftsapp.spring.stereotype"})
 @PropertySource("classpath:application.properties")
 @EnableWebMvc
+@EnableAsync
 public class PostgresFtsSpringMVCConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
