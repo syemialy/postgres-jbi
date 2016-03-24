@@ -8,15 +8,14 @@
                     <Set name="name">jbibasic</Set>
                     <Set name="refreshInterval">0</Set>
                     <Call name="putUser">
-                        <Arg><SystemProperty name="rest.user.name" default="test"/></Arg>
+                        <Arg><SystemProperty name="API_USER_NAME" default="test"/></Arg>
                         <Arg>
                             <New class="org.eclipse.jetty.util.security.Password">
-                                <Arg><SystemProperty name="rest.user.pwd" default="test"/></Arg>
+                                <Arg><SystemProperty name="API_USER_PWD" default="test"/></Arg>
                             </New>
                         </Arg>
                         <Arg>
                              <Array type="java.lang.String">
-                               <Item>value0</Item>
                                <Item><New class="java.lang.String"><Arg>api</Arg></New></Item>
                              </Array>
                         </Arg>
