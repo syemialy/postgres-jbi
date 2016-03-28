@@ -121,6 +121,10 @@ public class PostgresFtsSearchService implements FtsSearchService {
                 .append(request.get(Field.QUERY))
                 .append("')");
 
+        if ( request.containsKey(Field.ORDERBY)) {
+            sb.append(" ORDER BY ").append(request.get(Field.ORDERBY));
+        }
+
         if ( request.containsKey(Field.LIMIT) ) {
             sb.append(" LIMIT ").append(request.get(Field.LIMIT));
         }

@@ -17,6 +17,7 @@ public interface Field {
     String CONFIGURATION = "configuration";
     String LIMIT = "limit";
     String OFFSET = "offset";
+    String ORDERBY = "orderby";
 
     //Search Response message format
     String STATEMENT = "sqlstatement" ;
@@ -24,11 +25,11 @@ public interface Field {
     String RECORDS = "records";
     String RESULT = "result";
     String ERROR = "error";
+
     String ERROR_MSG = "error_message";
 
     //Create index message format
     String TYPE = "type";
-
     //Async create index response
     String MESSAGE = "message";
 }
