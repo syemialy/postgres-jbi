@@ -15,6 +15,8 @@ public interface Field {
     String TSV = "tsinclude";
     String QUERY = "query";
     String CONFIGURATION = "configuration";
+    String LIMIT = "limit";
+    String OFFSET = "offset";
 
     //Search Response message format
     String STATEMENT = "sqlstatement" ;
