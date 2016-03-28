@@ -122,11 +122,11 @@ public class PostgresFtsSearchService implements FtsSearchService {
                 .append("')");
 
         if ( request.containsKey(Field.LIMIT) ) {
-            sb.append(" LIMIT = ").append(request.get(Field.LIMIT));
+            sb.append(" LIMIT ").append(request.get(Field.LIMIT));
         }
 
         if ( request.containsKey(Field.OFFSET) ) {
-            sb.append(" OFFSET = ").append(request.get(Field.OFFSET));
+            sb.append(" OFFSET ").append(request.get(Field.OFFSET));
         }
 
         log.debug("search SQL statement: {}", sb.toString());
