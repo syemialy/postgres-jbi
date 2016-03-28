@@ -1,6 +1,9 @@
 #search
 curl --user test:test -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"need to connect"}' http://localhost:8081/srv/search
 
+#search with ORDER, LIMIT and OFFSET
+$ curl --user test:mememe -X POST -H 'Content-type:application/json' -d'{"table":{"name":"products","columns":[{"name":"description","selectable":false,"tsinclude":true},{"name":"id","selectable":true,"tsinclude":false},{"name":"product_name","selectable":true,"tsinclude":true}]},"query":"service","limit":1, "offset":0}' http://localhost:8081/srv/search
+
 #create index 
 curl --user test:test -X POST -H 'Content-type:application/json' -d'{"name":"idx_prddescr","table":{"name":"products","columns":[{"name":"description"},{"name":"product_name"}]}}' http://localhost:8081/srv/index
 
