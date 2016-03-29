@@ -2,6 +2,7 @@ package com.jetbi.postgresftsapp.spring.stereotype.service;
 
 import com.google.gson.Gson;
 import com.jetbi.postgresftsapp.spring.Field;
+import com.jetbi.postgresftsapp.spring.ProxySQLOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +26,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class PostgresFtsSearchService implements FtsSearchService {
+
+    private static final String SQL_INJECT_CHECK_CREATE = "\\b(CREATE)\\b";
+    private static final String SQL_INJECT_CHECK_DROP = "\\b(DROP)\\b";
+    private static final String SQL_INJECT_CHECK = "(;)|(\\b(ALTER|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})\\b)";
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -37,10 +44,12 @@ public class PostgresFtsSearchService implements FtsSearchService {
         StringBuilder sb = new StringBuilder();
         String ftsConfig = readFtsConfigurationParam(request);
         Map<String,Object> tableDescr = (Map<String,Object>)request.get(Field.TABLE);
-        sb.append("CREATE INDEX ").append(request.get(Field.NAME)).append(" ON ")
+        sb.append(request.get(Field.NAME)).append(" ON ")
                 .append(tableDescr.get(Field.NAME)).append(" USING ").append(readTsvectorType(request))
                 .append(" (to_tsvector('").append(readFtsConfigurationParam(request)).append("',")
                 .append(makeToTsvectorStatement((List<Map<String, Object>>) tableDescr.get(Field.COLUMNS))).append("))");
+        checkForSQLInjectionAttack(sb.toString(), ProxySQLOperation.CREATE);
+        sb.insert(0, "CREATE INDEX ");
         log.debug("creating index via SQL: {}", sb.toString());
         jdbcTemplate.execute(sb.toString());
         return sb.toString();
@@ -80,6 +89,7 @@ public class PostgresFtsSearchService implements FtsSearchService {
 
     @Override
     public String dropTsvectorIndex(String name) throws SQLException {
+        checkForSQLInjectionAttack(name,ProxySQLOperation.DROP);
         StringBuilder sb = new StringBuilder("DROP INDEX ");
         sb.append(name);
         jdbcTemplate.execute(sb.toString());
@@ -88,6 +98,7 @@ public class PostgresFtsSearchService implements FtsSearchService {
 
     @Override
     public List<String> checkTsvectorIndex(String name) throws SQLException {
+        checkForSQLInjectionAttack(name, ProxySQLOperation.SELECT);
         StringBuilder sb = new StringBuilder("SELECT (tablename || '.' || indexname) AS location FROM pg_indexes WHERE indexname = '");
         sb.append(name).append("'");
         List result = jdbcTemplate.queryForList(sb.toString());
@@ -113,7 +124,7 @@ public class PostgresFtsSearchService implements FtsSearchService {
                 .map(c -> "coalesce(" + (String) c.get(Field.NAME) + ",'')")
                 .collect(Collectors.joining(" || ' ' || "));
 
-        sb.append("SELECT ").append(selectable).append(" FROM ")
+        sb.append(selectable).append(" FROM ")
                 .append(tableDescr.get(Field.NAME))
                 .append(" WHERE to_tsvector('").append(ftsConfig).append("',").append(tsvect).append(") ")
                 .append("@@ ")
@@ -133,6 +144,9 @@ public class PostgresFtsSearchService implements FtsSearchService {
             sb.append(" OFFSET ").append(request.get(Field.OFFSET));
         }
 
+        //check for sql injection attack
+        checkForSQLInjectionAttack(sb.toString(), ProxySQLOperation.SELECT);
+        sb.insert(0,"SELECT ");
         log.debug("search SQL statement: {}", sb.toString());
 
         StopWatch stopWatch = new StopWatch();
@@ -146,6 +160,26 @@ public class PostgresFtsSearchService implements FtsSearchService {
         resultMap.put(Field.RECORDS,result);
 
         return resultMap;
+    }
+
+    /**
+     * Helps determine if partial SQL statement has potential injection attack
+     * @param sb
+     * @throws SQLException
+     */
+    private void checkForSQLInjectionAttack(final String sb, ProxySQLOperation operation) throws SQLException {
+        StringBuilder check = new StringBuilder(SQL_INJECT_CHECK);
+        switch (operation) {
+            case SELECT: check.append("|(").append(SQL_INJECT_CHECK).append(")|(").append(SQL_INJECT_CHECK_DROP).append(")"); break;
+            case CREATE: check.append("|(").append(SQL_INJECT_CHECK_DROP).append(")"); break;
+            case DROP: check.append("|(").append(SQL_INJECT_CHECK_CREATE).append(")"); break;
+        }
+        Pattern p = Pattern.compile(check.toString());
+        Matcher m = p.matcher(sb.toUpperCase());
+        if ( m.find() ) {
+            log.error("possible SQL injection attack with statement {}",sb.toString());
+            throw  new SQLException("SQL Injection", "terminating execution");
+        }
     }
 
     /**
