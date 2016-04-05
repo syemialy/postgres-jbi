@@ -1,6 +1,7 @@
 package com.jetbi.postgresftsapp.spring.stereotype.service.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jetbi.postgresftsapp.spring.Field;
 import com.jetbi.postgresftsapp.spring.stereotype.service.FtsSearchService;
 import org.slf4j.Logger;
@@ -88,7 +89,8 @@ public class RestService {
             responseMap.put(Field.ERROR,true);
             responseMap.put(Field.ERROR_MSG,e.getMessage());
         }
-        return gson.toJson(responseMap);
+        //null values in searchResult map now should not be ignored
+        return new GsonBuilder().serializeNulls().create().toJson(responseMap);
     }
 
 
@@ -162,7 +164,7 @@ public class RestService {
         Map<String,Object> request = gson.fromJson(body, Map.class);
         Map<String,Object> responseMap = new HashMap<>(0);
         try {
-            String resp = ftsSearchService.dropTsvectorIndex((String)request.get(Field.NAME));
+            String resp = ftsSearchService.dropTsvectorIndex((String) request.get(Field.NAME));
             responseMap.put(Field.RESULT, "dropped");
             responseMap.put(Field.STATEMENT, resp);
             responseMap.put(Field.ERROR,false);
